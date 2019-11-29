@@ -22,6 +22,13 @@ for line in config:
         except Exception as e:
             print(e)
             sys.exit()
+    if line.strip().startswith('Baudrate:'):
+        try:
+            baud = int(line.replace('Baudrate:', '').replace('\n', '').strip())
+            s.baudrate = baud
+        except Exception as e:
+            print(e)
+            sys.exit()
     if line.strip().startswith('Excel Path:'):
         path = line.replace('Excel Path:', '').replace('\n', '').strip()
         if path != '' and not path.endswith('\\'):
@@ -35,6 +42,9 @@ for line in config:
             print(e)
             sys.exit()
 
-data = s.readline()
-outfile.write(data.decode('utf-8').replace('\n', ''))
+for a in range(20):
+    data = s.readline()
+    print(data)
+    print(data.decode('utf-8').replace('\n', ''))
+    outfile.write(data.decode('utf-8').replace('\n', ''))
 outfile.close()

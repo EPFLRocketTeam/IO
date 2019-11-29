@@ -2,3 +2,4 @@
 Serial Port: COM5
 # Empty Path will result in currend directory, only specify if needed
 Excel Path:
+Baudrate: 9600
