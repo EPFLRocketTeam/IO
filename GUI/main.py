@@ -5,19 +5,19 @@
 import serial
 import sys
 
-try:
+try:  # Open config
     config = open('config.txt', 'r')
 except Exception as e:
     print(e)
     sys.exit()
 
-for line in config:
+for line in config:  # Initialize program from config
     if line.strip().startswith('#') or line.strip().startswith('\n'):
         continue
     if line.strip().startswith('Serial Port:'):
         port = line.replace('Serial Port:', '').replace('\n', '').strip()
         try:
-            s = serial.Serial('COM5')
+            s = serial.Serial(port)
             print('[Serial] Connection on Port ' + port)
         except Exception as e:
             print(e)
@@ -42,9 +42,16 @@ for line in config:
             print(e)
             sys.exit()
 
-for a in range(20):
+while s.inWaiting:
     data = s.readline()
     print(data)
-    print(data.decode('utf-8').replace('\n', ''))
-    outfile.write(data.decode('utf-8').replace('\n', ''))
+    try:
+        value = int(data)
+        print(value)
+        outfile.write(str(value) + '\n')
+        if value == 300:
+            break
+    except Exception as e:
+        print(e)
 outfile.close()
+s.close()
