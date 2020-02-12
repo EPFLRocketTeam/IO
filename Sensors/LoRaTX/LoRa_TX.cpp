@@ -11,12 +11,12 @@ void LoRa_TX::begin(long freq = 433E6){
 
 bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
   if (packetSize == 0) return false;
-
   // read packet header bytes:
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
   byte incomingLength = LoRa.read();    // incoming msg length
+  
   Data timeStamp;
   for(int i(0); i < BYTE; i++)
     timeStamp.i[i] = LoRa.read();
@@ -54,6 +54,9 @@ bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
 void LoRa_TX::sendData(Data d[], int leng = NBDATA){
   LoRa.beginPacket();
   writeHeader();
+  Serial.print("no. ");
+  Serial.println(msgCount);
+  
   for(int j(0); j < leng; j++){
     for(int h(0); h < BYTE; h++){
       LoRa.write(d[j].i[h]);
