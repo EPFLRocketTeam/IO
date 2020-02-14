@@ -4,7 +4,10 @@
 
 const int csPin = 7;       //CS  
 const int resetPin = 6;   //RST    
-const int irqPin = 3;    //G0  
+const int irqPin = 3;    //G0
+
+#define DATA 1
+#define MESSAGE 2
 
 //LORA    ARD
 
@@ -57,28 +60,42 @@ void beginLora(){
 
 void sendMessage(String outgoing) {
   LoRa.beginPacket();                   // start packet
+  /*
   LoRa.write(destination);              // add destination address
   LoRa.write(localAddress);             // add sender address
   LoRa.write(msgCount);                 // add message ID
   LoRa.write(outgoing.length());        // add payload length
+  */
   Data t;
   t.f = millis();
   LoRa.write(t.i, 4); 
   LoRa.print(outgoing);                 // add payload
   LoRa.endPacket();                     // finish packet and send it
   //msgCount++;                           // increment message ID
-  Serial.println("Message sent");
+  Serial.println(outgoing);
 }
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet
 
+  switch(LoRa.read()){
+   case MESSAGE  :
+      stringReceive();
+      break;
+  
+   default : 
+      dataReceive();
+  }
+}
+
+void dataReceive(){
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
+  Data t; //le temps
+  for(int i(0); i < BYTE; i++)
+    t.i[i] = LoRa.read();
   
-  //***********Je vais mettre un checkSum et quelques verifications sur les donnees quelque part ici
-
   if (recipient != localAddress && recipient != 0xFF) {
     Serial.println("This message is not for me.");
     return;                            
@@ -87,10 +104,6 @@ void onReceive(int packetSize) {
   Serial.println("Received from: 0x" + String(sender, HEX)); 
   Serial.println("Sent to: 0x" + String(recipient, HEX));
   Serial.println("Message ID: " + String(incomingMsgId));
-  
-  Data t; //le temps
-  for(int i(0); i < BYTE; i++)
-    t.i[i] = LoRa.read();
 
   //Serial.print("Temps : ");
   //Serial.println(t.f/1000);
@@ -106,6 +119,7 @@ void onReceive(int packetSize) {
       //Serial.print(" ");
     }
   }
+  
   printData(d);
   if(checkSum(d))
     Serial.println("Checksum verified");
@@ -114,6 +128,45 @@ void onReceive(int packetSize) {
     
   Serial.println("RSSI: " + String(LoRa.packetRssi())); //signal strength
   Serial.println("Snr: " + String(LoRa.packetSnr())); //Ca mesure le niveau de bruit et le signal strength
+  Serial.println();
+}
+
+void stringReceive(){
+  // read packet header bytes:
+  int recipient = LoRa.read();          // recipient address
+  byte sender = LoRa.read();            // sender address
+  byte incomingMsgId = LoRa.read();     // incoming msg ID
+  byte incomingLength = LoRa.read();    // incoming msg length
+  Data t;
+  for(int i(0); i < 4; i++)
+    t.i[i] = LoRa.read();
+  
+  String incoming = "";
+
+  while (LoRa.available()) {
+    incoming += (char)LoRa.read();
+  }
+
+  if (incomingLength != incoming.length()) {   // check length for error
+    Serial.println("error: message length does not match length");
+    return;                             // skip rest of function
+  }
+
+  // if the recipient isn't this device or broadcast,
+  if (recipient != localAddress && recipient != 0xFF) {
+    Serial.println("This message is not for me.");
+    return;                             // skip rest of function
+  }
+
+  // if message is for this device, or broadcast, print details:
+  Serial.println("Received from: 0x" + String(sender, HEX));
+  Serial.println("Sent to: 0x" + String(recipient, HEX));
+  Serial.println("Message ID: " + String(incomingMsgId));
+  Serial.println("Message length: " + String(incomingLength));
+  Serial.println("Time:" + String(t.f/1000.));
+  Serial.println("Message: " + incoming);
+  Serial.println("RSSI: " + String(LoRa.packetRssi()));
+  Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 }
 
@@ -128,8 +181,12 @@ bool checkSum(Data d[]){
   for(int i(0); i < NBDATA-1; i++){
     s += d[i].f;
   }
+  
   Serial.print("Calculated sum : ");
   Serial.println(s);
+  Serial.print("Transmitted sum : ");
+  Serial.println(d[NBDATA-1].f);
+  
   if(s == d[NBDATA-1].f)
     return true;
   return false;

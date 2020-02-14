@@ -1,6 +1,7 @@
 #include "LoRa_TX.h"
 #include "BMP280.h"
 #include "BNO055.h"
+#include "LSD.h"
 #include "Data.h"
 
 LoRa_TX LoRaTX;
@@ -20,6 +21,7 @@ void setup() {
   
   bmp.begin();
   bno.begin();
+  LSD::begin();
   LoRaTX.begin();
   awaitActivation();
 }
@@ -41,10 +43,11 @@ void loop() {
   d[7].f = sum(d);
   printData(d);
   LoRaTX.sendData(d);
+  LSD::logData(d);
   //Serial.println(d[0].f);
   
   curTime = millis();
-  //Serial.println(curTime - lastLoop);
+  Serial.println(curTime - lastLoop);
   lastLoop = curTime;
   msgCount++;
 }
@@ -58,7 +61,6 @@ void awaitActivation(){
     }
     lastLoop = millis();
   }
-  Serial.println("Correct code received, activating");
 }
 
 float sum(Data d[]){

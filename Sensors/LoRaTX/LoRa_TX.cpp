@@ -11,12 +11,12 @@ void LoRa_TX::begin(long freq = 433E6){
 
 bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
   if (packetSize == 0) return false;
-  // read packet header bytes:
+  /*
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
   byte incomingLength = LoRa.read();    // incoming msg length
-  
+  */
   Data timeStamp;
   for(int i(0); i < BYTE; i++)
     timeStamp.i[i] = LoRa.read();
@@ -25,8 +25,10 @@ bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
 
   while (LoRa.available()) {
     incoming += (char)LoRa.read();
+    Serial.println(incoming);
   }
 
+  /*
   if (incomingLength != incoming.length()) {   // check length for error
     Serial.println("error: message length does not match length");
     return false;                             // skip rest of function
@@ -37,7 +39,8 @@ bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
     Serial.println("This message is not for me.");
     return false;                             // skip rest of function
   }
-
+  */
+  
   if(incoming == activationCode){
     Serial.print("Avionics Activated at time("); 
     Serial.print(timeStamp.f/1000., 4); 
@@ -53,6 +56,7 @@ bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
 
 void LoRa_TX::sendData(Data d[], int leng = NBDATA){
   LoRa.beginPacket();
+  LoRa.write(DATA);
   writeHeader();
   Serial.print("no. ");
   Serial.println(msgCount);
@@ -68,6 +72,7 @@ void LoRa_TX::sendData(Data d[], int leng = NBDATA){
 
 void LoRa_TX::sendMessage(String outgoing) {
   LoRa.beginPacket();                   // start packet
+  LoRa.write(MESSAGE);
   writeHeader();
   LoRa.write(outgoing.length());        // add payload length
   LoRa.print(outgoing);                 // add payload
@@ -75,6 +80,16 @@ void LoRa_TX::sendMessage(String outgoing) {
   msgCount++;                           // increment message ID
 }
 
+void LoRa_TX::writeHeader(){
+  LoRa.write(DESTINATION);              // add destination address
+  LoRa.write(LOCALADDRESS);             // add sender address
+  LoRa.write(msgCount);                 // add message ID
+  Data t;
+  t.f = millis();
+  LoRa.write(t.i, 4);                   //add time stamp
+}
+
+/*
 void LoRa_TX::onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
 
@@ -115,16 +130,8 @@ void LoRa_TX::onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 }
+*/
 
 bool LoRa_TX::sleep(){
     LoRa.sleep();
-}
-
-void LoRa_TX::writeHeader(){
-  LoRa.write(DESTINATION);              // add destination address
-  LoRa.write(LOCALADDRESS);             // add sender address
-  LoRa.write(msgCount);                 // add message ID
-  Data t;
-  t.f = millis();
-  LoRa.write(t.i, 4);                   //add time stamp
 }
