@@ -4,9 +4,9 @@
 #include "LSD.h"
 #include "Data.h"
 
-LoRa_TX LoRaTX;
 BMP280 bmp;
 BNO055 bno;
+LoRa_TX LoRaTX;
 
 double lastLoop = millis();
 double curTime(0);
@@ -44,18 +44,14 @@ void loop() {
   printData(d);
   LoRaTX.sendData(d);
   LSD::logData(d);
-  //Serial.println(d[0].f);
   
-  curTime = millis();
-  Serial.println(curTime - lastLoop);
-  lastLoop = curTime;
   msgCount++;
 }
 
 void awaitActivation(){
   while(!LoRaTX.awaitActivation()){
     if (millis() - lastLoop > WAITPERIOD) {
-      Serial.println("no or wrong code received in determined interval");
+      Serial.println(F("no or wrong code received in determined interval"));
       LoRaTX.sleep();
       delay(60000);
     }
@@ -64,7 +60,7 @@ void awaitActivation(){
 }
 
 float sum(Data d[]){
-  float s;
+  float s(0);
   for(int i(0); i < NBDATA-1; i++){
     s += d[i].f;
   }
@@ -76,4 +72,10 @@ void printData(Data d[]){
     Serial.println(d[i].f);
   }
   Serial.println();
+}
+
+void printTimeLapse(){
+  curTime = millis();
+  //Serial.println(curTime - lastLoop);
+  lastLoop = curTime;
 }
