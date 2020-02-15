@@ -42,9 +42,9 @@ bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
   */
   
   if(incoming == activationCode){
-    Serial.print("Avionics Activated at time("); 
+    Serial.print(F("Avionics Activated at time(")); 
     Serial.print(timeStamp.f/1000., 4); 
-    Serial.print(") with code: ");
+    Serial.print(F(") with code: "));
     Serial.println(incoming);
     sendMessage("Active");
     return true;
@@ -58,7 +58,7 @@ void LoRa_TX::sendData(Data d[], int leng = NBDATA){
   LoRa.beginPacket();
   LoRa.write(DATA);
   writeHeader();
-  Serial.print("no. ");
+  Serial.print(F("no. "));
   Serial.println(msgCount);
   
   for(int j(0); j < leng; j++){
