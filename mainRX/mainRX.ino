@@ -33,7 +33,7 @@ void setup() {
   Serial.begin(9600);                   
   while (!Serial);
 
-  Serial.println("Ground Station initialisation");
+  //Serial.println("Ground Station initialisation");
   beginLora();
 }
 
@@ -49,12 +49,12 @@ void beginLora(){
     while (true);                       // if failed, do nothing
   }
 
-  Serial.println("LoRaRX online.");
+  //Serial.println("LoRaRX online.");
   
-  Serial.println("Activate Avionics? Y / N");
+  //Serial.println("Activate Avionics? Y / N");
   //while((Serial.readString() != "Y"));
   
-  Serial.println("Activating...");
+  //Serial.println("Activating...");
   sendMessage("1234");
 }
 
@@ -72,7 +72,6 @@ void sendMessage(String outgoing) {
   LoRa.print(outgoing);                 // add payload
   LoRa.endPacket();                     // finish packet and send it
   //msgCount++;                           // increment message ID
-  Serial.println(outgoing);
 }
 
 void onReceive(int packetSize) {
@@ -101,9 +100,9 @@ void dataReceive(){
     return;                            
   }
   
-  Serial.println("Received from: 0x" + String(sender, HEX)); 
-  Serial.println("Sent to: 0x" + String(recipient, HEX));
-  Serial.println("Message ID: " + String(incomingMsgId));
+  //Serial.println("Received from: 0x" + String(sender, HEX)); 
+  //Serial.println("Sent to: 0x" + String(recipient, HEX));
+  //Serial.println("Message ID: " + String(incomingMsgId));
 
   //Serial.print("Temps : ");
   //Serial.println(t.f/1000);
@@ -121,13 +120,14 @@ void dataReceive(){
   }
   
   printData(d);
+  
   if(checkSum(d))
     Serial.println("Checksum verified");
   else
     Serial.println("False Checksum");
-    
-  Serial.println("RSSI: " + String(LoRa.packetRssi())); //signal strength
-  Serial.println("Snr: " + String(LoRa.packetSnr())); //Ca mesure le niveau de bruit et le signal strength
+  
+  //Serial.println("RSSI: " + String(LoRa.packetRssi())); //signal strength
+  //Serial.println("Snr: " + String(LoRa.packetSnr())); //Ca mesure le niveau de bruit et le signal strength
   Serial.println();
 }
 
@@ -174,6 +174,7 @@ void printData(Data d[]){
   for(int i(0); i < NBDATA; i++){
     Serial.println(d[i].f);
   }
+  //Serial.println();
 }
 
 bool checkSum(Data d[]){
@@ -181,11 +182,6 @@ bool checkSum(Data d[]){
   for(int i(0); i < NBDATA-1; i++){
     s += d[i].f;
   }
-  
-  Serial.print("Calculated sum : ");
-  Serial.println(s);
-  Serial.print("Transmitted sum : ");
-  Serial.println(d[NBDATA-1].f);
   
   if(s == d[NBDATA-1].f)
     return true;
