@@ -1,7 +1,7 @@
 #ifndef DATA_H
 #define DATA_H
 
-#define NBDATA 9
+#define NBDATA 8
 #define BYTE 4
 
 union Data{

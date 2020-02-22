@@ -9,12 +9,12 @@ static void LSD::begin(){
     for(;;);
   }
   
-  Serial.println("SD card initialized.");
+  Serial.println(F("SD card initialized."));
 }
 
 static void LSD::logData(Data d[], int leng = NBDATA){
   String dataString = "";
-  for (int i(0); i < leng-1; i++) {
+  for (int i(0); i < leng; i++) {
     dataString += (String(d[i].f) + " ");
   }
 

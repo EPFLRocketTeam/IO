@@ -87,37 +87,40 @@ void loop(void)
   // - VECTOR_LINEARACCEL   - m/s^2
   // - VECTOR_GRAVITY       - m/s^2
   imu::Vector<3> acc = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-  imu::Vector<3> angle = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
+  imu::Vector<3> angle = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
   Data d[NBDATA];
   time=millis();
   /* Display the floating point data */
-  Serial.print("accX: ");
-  d[0].f = acc.x();
-  Serial.print(acc.x());
-  Serial.print(" accY: ");
+  d[0].f= time;
+  Serial.print(time);
+  Serial.print(F("accX: "));
   d[1].f = acc.x();
-  Serial.print(acc.y());
-  Serial.print(" accZ: ");
+  Serial.print(acc.x());
+  Serial.print(F(" accY: "));
   d[2].f = acc.x();
+  Serial.print(acc.y());
+  Serial.print(F(" accZ: "));
+  d[3].f = acc.x();
   Serial.print(acc.z());
-  d[3].f = bmp.getAltitude();
-  Serial.print(" altitude: ");
+  d[4].f = bmp.getAltitude();
+  Serial.print(F(" altitude: "));
   Serial.print(bmp.getAltitude());
-  Serial.print(" X :");
-  d[4].f = angle.x();
+  Serial.print(F(" X :"));
+  d[5].f = angle.x();
   Serial.print(angle.x());
-  Serial.print(" Y :");
-  d[5].f = angle.y();
+  Serial.print(F(" Y :"));
+  d[6].f = angle.y();
   Serial.print(angle.y());
-  Serial.print(" Z :");
-  d[6].f = angle.z();
+  Serial.print(F(" Z :"));
+  d[7].f = angle.z();
   Serial.print(angle.z());
   
-  Serial.print("\t\t");
+  
+  Serial.println("\t\t");
 
   
   LSD::logData(d);
-  LoRaTX.sendData(d);
+  //LoRaTX.sendData(d);
   /*
   // Quaternion data
   imu::Quaternion quat = bno.getQuat();
@@ -133,7 +136,7 @@ void loop(void)
   */
 
   /* Display calibration status for each sensor. */
-  uint8_t system, gyro, accel, mag = 0;
+ /* uint8_t system, gyro, accel, mag = 0;
   bno.getCalibration(&system, &gyro, &accel, &mag);
   Serial.print("CALIBRATION: Sys=");
   Serial.print(system, DEC);
@@ -142,7 +145,7 @@ void loop(void)
  // Serial.print(" Accel=");
  // Serial.print(accel, DEC);
  // Serial.print(" Mag=");
- // Serial.println(mag, DEC);
+ // Serial.println(mag, DEC);*/
 
   delay(BNO055_SAMPLERATE_DELAY_MS);
     msgCount++;

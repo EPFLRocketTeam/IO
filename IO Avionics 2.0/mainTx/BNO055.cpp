@@ -11,7 +11,7 @@ void BNO055::begin(){
     for(;;);
   }
   
-  Serial.println("BNO055 Online.");
+  Serial.println(F("BNO055 Online."));
 }
 
 //imu::Vector<3> BNO055::getOrientation(){
