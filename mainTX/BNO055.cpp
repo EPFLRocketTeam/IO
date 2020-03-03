@@ -1,6 +1,6 @@
 #include "BNO055.h"
 
-extern int fail;
+extern bool fail;
 
 BNO055::BNO055()
   : bno(-1, 0x28)

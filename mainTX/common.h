@@ -22,7 +22,7 @@
 
 //From LSD
 #define CS_LSD (8)
-
+#define log_file_name F("datalog.txt")
 bool fail = false;
 
 #endif // COMMON_H

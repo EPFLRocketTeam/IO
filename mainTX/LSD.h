@@ -8,9 +8,10 @@
 class LSD
 {
 public:
-  LSD();
-  static void begin();
-  static void logData(Data d[], int leng = NBDATA);
+    LSD();
+    
+    static void Begin();
+    static void LogData(Data d[], int leng = NBDATA);
 };
 
 #endif // LSD_H
