@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "../Data.h"
+#include "Data.h"
 
 //From bmp
 #define BMP_SCK  (13)

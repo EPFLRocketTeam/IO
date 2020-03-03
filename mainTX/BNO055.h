@@ -7,14 +7,17 @@
 #include <utility/imumaths.h>
 #include "common.h"
 
-class BNO055{
-  private:
-  Adafruit_BNO055 bno;
-  public:
-  BNO055();
-  void begin();
- // imu::Vector<3> getOrientation();
-  imu::Vector<3> getAcc();
+class BNO055
+{
+public:
+    BNO055();
+    
+    void Begin();
+    imu::Vector<3>& GetOrientation() const;
+    imu::Vector<3>& GetAcc() const;
+
+private:
+    Adafruit_BNO055 bno;
 };
 
-#endif // BNO055_H_INCLUDED
+#endif // BNO055_H
