@@ -5,16 +5,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-
-//BNO     ARD
-//VDD     3.3v
-//GND     GND
-//SCL     A5(CLK)
-//SDA     A4
-//VERIFIEE***
-
-/* Set the delay between fresh samples */
-#define BNO055_SAMPLERATE_DELAY_MS (100)
+#include "common.h"
 
 class BNO055{
   private:

@@ -4,31 +4,22 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_BMP280.h>
+#include "common.h"
 
-#define BMP_SCK  (13)
-#define BMP_MISO (12)
-#define BMP_MOSI (11)
-#define BMP_CS   (9)
+class BMP280
+{
+public:
+    BMP280();
+    void Begin();
 
-//BMP     ARD
-//VCC     3.3v
-//GND     GND
-//SCL     A5(CLK)
-//SDA     A4
-//CSB     -
-//SDD     3.3v
-//VERIFIEE***
+    void PrintAltitude() const;
+    float& GetAltitude() const;
+    
+    void PrintPressure() const;
+    float& GetPressure() const;
 
-class BMP280{
-  private:
-  Adafruit_BMP280 bmp;
-  public:
-  BMP280();
-  void begin();
-  void printAltitude();
-  float getAltitude();
-  void printPressure();
-  float getPressure();
+private:
+    Adafruit_BMP280 bmp;
 };
 
-#endif // BMP280_H_INCLUDED
+#endif // BMP280_H

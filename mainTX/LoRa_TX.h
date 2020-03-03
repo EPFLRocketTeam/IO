@@ -3,27 +3,7 @@
 
 #include <SPI.h>
 #include <LoRa.h>
-#include "Data.h"
-
-#define WAITPERIOD 120000
-#define LOCALADDRESS 0xBB    // address of this device
-#define DESTINATION 0xFF      // destination to send to
-#define INTERVAL 2000
-#define DATA 1
-#define MESSAGE 2
-
-//LORA    ARD
-
-//Vin     3.3v
-//GND     GND
-//EN      ---
-//G0      D3
-//SCK     D13
-//MISO    D12
-//MOSI    D11
-//CS      D7
-//RST     D6
-//VERIFIEE    
+#include "common.h"
 
 class LoRa_TX{
     public:
