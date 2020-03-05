@@ -2,9 +2,7 @@
 #define BMP280_H
 
 #include <Wire.h>
-#include <SPI.h>
 #include <Adafruit_BMP280.h>
-#include "common.h"
 
 class BMP280
 {
@@ -12,11 +10,11 @@ public:
     BMP280();
     void Begin();
 
-    void PrintAltitude() const;
-    float& GetAltitude() const;
+    void PrintAltitude();
+    float GetAltitude();
     
-    void PrintPressure() const;
-    float& GetPressure() const;
+    void PrintPressure();
+    float GetPressure();
 
 private:
     Adafruit_BMP280 bmp;

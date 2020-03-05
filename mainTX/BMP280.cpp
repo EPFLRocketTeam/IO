@@ -1,6 +1,6 @@
 #include "BMP280.h"
 
-extern int fail;
+#include "common.h"
 
 BMP280::BMP280()
   : bmp() {}
@@ -10,7 +10,6 @@ void BMP280::Begin()
     if (!bmp.begin())
     {
         Serial.println(F("ERROR::No BMP280 sensor detected!"));
-        fail = true;
         return;
     }
 
@@ -25,24 +24,24 @@ void BMP280::Begin()
 
 void BMP280::PrintAltitude()
 {
-    Serial.print(F("Altitude (m): "));
-    Serial.print(bmp.readAltitude(1005));
+    Serial.print(F("Altitude [m]: "));
+    Serial.print(GetAltitude());
     Serial.println();
 }
 
-float& BMP280::GetAltitude()
+float BMP280::GetAltitude()
 {
-    return bmp.readAltitude(1005);
+    return bmp.readAltitude(LOCAL_PRESSURE);
 }
 
 void BMP280::PrintPressure()
 {
-    Serial.print(F("Pressure (Pa): "));
+    Serial.print(F("Pressure [Pa]: "));
     Serial.print(GetPressure());
     Serial.println();
 }
 
-float& BMP280::GetPressure()
+float BMP280::GetPressure()
 {
     return bmp.readPressure();
 }

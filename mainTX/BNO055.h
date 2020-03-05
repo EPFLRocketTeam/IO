@@ -5,7 +5,6 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#include "common.h"
 
 class BNO055
 {
@@ -13,8 +12,8 @@ public:
     BNO055();
     
     void Begin();
-    imu::Vector<3>& GetOrientation() const;
-    imu::Vector<3>& GetAcc() const;
+    imu::Vector<3> GetEuler();
+    imu::Vector<3> GetAcceleration();
 
 private:
     Adafruit_BNO055 bno;

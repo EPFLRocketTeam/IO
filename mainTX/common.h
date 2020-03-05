@@ -1,13 +1,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "Data.h"
+//#include "Data.h"
 
 //From bmp
-#define BMP_SCK  (13)
-#define BMP_MISO (12)
-#define BMP_MOSI (11)
-#define BMP_CS   (9)
+#define LOCAL_PRESSURE (1015)
 
 //From BNO055 
 #define BNO055_SAMPLERATE_DELAY_MS (100)
@@ -23,6 +20,5 @@
 //From LSD
 #define CS_LSD (8)
 #define log_file_name F("datalog.txt")
-bool fail = false;
 
 #endif // COMMON_H
