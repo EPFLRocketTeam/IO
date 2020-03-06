@@ -1,28 +1,19 @@
-//#include "LoRa_TX.h"
-//#include "common.h"
 #include "BMP280.h"
 #include "BNO055.h"
-//#include "LSD.h"
+#include "LSD.h"
+#include "LoRa_TX.h"
 //#include "Data.h"
-//#include <Wire.h>
-//#include <Adafruit_Sensor.h>
-//#include <Adafruit_BNO055.h>
-//#include <utility/imumaths.h>
 
 //unsigned long time;
 
 BMP280 bmp;
 BNO055 bno;
+LSD lsd;
+LoRa_TX lora;
 
 /*
-LoRa_TX LoRaTX;
-
 double lastLoop = millis();
 double curTime(0);
-
-#define BNO055_SAMPLERATE_DELAY_MS (100)
-
-Adafruit_BNO055 bno = Adafruit_BNO055(-1, 0x28);
 */
 
 void setup(void)
@@ -31,20 +22,6 @@ void setup(void)
 	Serial.println("Orientation Sensor Raw Data Test");
 	Serial.println("");
 
-    /*
-	pinMode(7, OUTPUT);
-	digitalWrite(7, HIGH);
-	delay(10);
-	*/
-
-	/*if(!bno.begin())
-	{
-		Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-		while(1);
-	}
-
-	delay(1000);
-	*/
 
 	/* Display the current temperature */
 	/*int8_t temp = bno.getTemp();
@@ -62,6 +39,8 @@ void setup(void)
 	*/
     bmp.Begin(); 
     bno.Begin();
+	  lsd.Begin();
+    lora.Begin();
 }
 
 /*
@@ -71,16 +50,7 @@ int msgCount(0);
 
 void loop(void)
 {
-	// Possible vector values can be:
-	// - VECTOR_ACCELEROMETER - m/s^2
-	// - VECTOR_MAGNETOMETER  - uT
-	// - VECTOR_GYROSCOPE     - rad/s
-	// - VECTOR_EULER         - degrees
-	// - VECTOR_LINEARACCEL   - m/s^2
-	// - VECTOR_GRAVITY       - m/s^2
 	/*
-    imu::Vector<3> acc = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-	imu::Vector<3> angle = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 	Data d[NBDATA];
 	time=millis();
 	*/
