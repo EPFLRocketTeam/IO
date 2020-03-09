@@ -1,5 +1,7 @@
 # Config file for Groundstation
-Serial Port: COM5
+Serial Port: COM7
 # Empty Path will result in currend directory, only specify if needed
 Excel Path:
+# With 9600 Baud, 960 char per second can be reicieved
 Baudrate: 9600
+NB_DATA: 8
