@@ -10,6 +10,7 @@
 #define INTERVAL 2000
 #define DATA 1
 #define MESSAGE 2
+#define HEADER 3
 
 #define CS_LSD (8)
 #define log_file_name F("datalog.txt")

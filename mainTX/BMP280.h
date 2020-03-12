@@ -3,6 +3,7 @@
 
 #include <Wire.h>
 #include <Adafruit_BMP280.h>
+#include "common.h"
 
 class BMP280
 {

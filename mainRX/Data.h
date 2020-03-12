@@ -1,10 +1,11 @@
 #ifndef DATA_H
 #define DATA_H
 
-#define NBDATA 8
+#define NBR_DATA 8
 #define BYTE 4
 
-union Data{
+union Data
+{
   float f;
   uint8_t i[4];
 };

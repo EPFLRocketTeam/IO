@@ -12,7 +12,7 @@ public:
     LSD();
     
     void Begin();
-    void LogData(Data d[], int length = NBR_DATA);
+    void LogData(uint8_t packet[], int length = NBR_DATA*BYTE);
 };
 
 #endif // LSD_H

@@ -1,9 +1,8 @@
 #include "BMP280.h"
 
-#include "common.h"
-
 BMP280::BMP280()
-  : bmp() {}
+  : bmp() 
+{}
 
 void BMP280::Begin()
 {
@@ -19,7 +18,7 @@ void BMP280::Begin()
         Adafruit_BMP280::FILTER_X8,
         Adafruit_BMP280::STANDBY_MS_63);
 
-    Serial.println("BMP280 Online");
+    Serial.println(F("BMP280 Online"));
 }
 
 void BMP280::PrintAltitude()
