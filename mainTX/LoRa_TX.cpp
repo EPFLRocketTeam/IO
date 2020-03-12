@@ -1,13 +1,13 @@
 #include "LoRa_TX.h"
+#include "Data.h"
 
 LoRa_TX::LoRa_TX()
-    :   activationCode{"1234"}, msgCount{0}  
+    :   activationCode{"1234"}, msgCount{0}, rf95{csPin}  
 {}
 
-void LoRa_TX::Begin(long int freq)
+void LoRa_TX::Begin()
 {
-    LoRa.setPins(csPin, resetPin, irqPin);
-    if (!LoRa.begin(freq))
+    if (!rf95.init())
     {
     	Serial.println(F("ERROR::LoRa init failed!"));
     	return;
@@ -16,92 +16,25 @@ void LoRa_TX::Begin(long int freq)
     Serial.println(F("LoRaTX Online, awaiting activation"));
 }
 
-bool LoRa_TX::AwaitActivation(int packetSize = LoRa.parsePacket())
-{
-    if (packetSize == 0) return false;
-    /*
-    int recipient = LoRa.read();          // recipient address
-    byte sender = LoRa.read();            // sender address
-    byte incomingMsgId = LoRa.read();     // incoming msg ID
-    byte incomingLength = LoRa.read();    // incoming msg length
-    */
-    Data timeStamp;
-    for(int i(0); i < BYTE; i++)
-    	timeStamp.i[i] = LoRa.read();
-    
-    String incoming = "";
-    
-    while (LoRa.available())
-    {
-    	incoming += (char)LoRa.read();
-    	Serial.println(incoming);
-    }
-    
-    /*
-    if (incomingLength != incoming.length()) {   // check length for error
-    	Serial.println("error: message length does not match length");
-    	return false;                             // skip rest of function
-    }
-    
-    // if the recipient isn't this device or broadcast,
-    if (recipient != LOCALADDRESS && sender != DESTINATION) {
-    	Serial.println("This message is not for me.");
-    	return false;                             // skip rest of function
-    }
-    */
-
-    if(incoming == activationCode)
-    {
-    	Serial.print(F("Avionics Activated at time("));
-    	Serial.print(timeStamp.f/1000., 4);
-    	Serial.print(F(") with code: "));
-    	Serial.println(incoming);
-    	SendMessage("Active");
-    	return true;
-    }
-
-    SendMessage(F("INCORRECT ACTIVATION CODE"));
-    return false;
+void LoRa_TX::SendMessage(String outgoing){
+  
 }
 
-void LoRa_TX::SendData(Data data[], int length = NBR_DATA)
-{
-    LoRa.beginPacket();
-    LoRa.write(DATA);
-    WriteHeader();
-    Serial.print(F("no"));
-    Serial.println(msgCount);
-
-    for(int j(0); j < length; j++)
-        for(int h(0); h < BYTE; h++)
-            LoRa.write(data[j].i[h]);
-
-    LoRa.endPacket();
-    msgCount++;
+void LoRa_TX::SendData(uint8_t data[], int length = NBR_DATA){
+  uint8_t packet[NBR_DATA+HEADER];
+  writeHeader(packet, data, DATA);
+  rf95.send(packet, sizeof(packet));
+  rf95.waitPacketSent();
+  msgCount++;
 }
 
-void LoRa_TX::SendMessage(String outgoing)
-{
-    LoRa.beginPacket();                   // start packet
-    LoRa.write(MESSAGE);
-    WriteHeader();
-    LoRa.write(outgoing.length());        // add payload length
-    LoRa.print(outgoing);                 // add payload
-    LoRa.endPacket();                     // finish packet and send it
-    msgCount++;                           // increment message ID
-}
-
-void LoRa_TX::WriteHeader()
-{
-    LoRa.write(DESTINATION);              // add destination address
-    LoRa.write(LOCALADDRESS);             // add sender address
-    LoRa.write(msgCount);                 // add message ID
-    Data t;
-    t.f = millis();
-    LoRa.write(t.i, 4);                   //add time stamp
-}
-
-bool LoRa_TX::Sleep()
-{
-    LoRa.sleep();
+void LoRa_TX::writeHeader(uint8_t packet[], uint8_t data[], byte messageType){
+  packet[0] = LOCALADDRESS;
+  packet[1] = messageType;
+  packet[2] = msgCount;
+  for(int k(0); k < NBR_DATA; k++){
+    for(int j(0); j < BYTE; j++){
+      packet[HEADER+k+j] = data[k+j];
+    }
+  }
 }

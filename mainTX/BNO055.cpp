@@ -8,13 +8,13 @@ BNO055::BNO055()
 
 void BNO055::Begin()
 {
-    if (!bno.begin())
-    {
-        Serial.println(F("Ooops, no BNO055 detected!"));
-        return;
-    }
-
-    Serial.println(F("BNO055 Online."));
+  if (!bno.begin())
+  {
+      Serial.println(F("Ooops, no BNO055 detected!"));
+      return;
+  }
+  bno.setExtCrystalUse(true);
+  Serial.println(F("BNO055 Online."));
 }
 
 imu::Vector<3> BNO055::GetEuler()
