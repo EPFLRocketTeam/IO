@@ -1,58 +1,100 @@
+#include "LoRa_TX.h"
 #include "BMP280.h"
 #include "BNO055.h"
 #include "LSD.h"
-#include "LoRa_TX.h"
+#include "Data.h"
+#define BPM 120
+#define C4  261.63
+#define C8  4186.01
+#define Q 60000/BPM
 
 BMP280 bmp;
 BNO055 bno;
-LSD lsd;
-LoRa_TX lora;
+LoRa_TX LoRaTX;
 
-void addData(int index, int length = NBR_DATA);
+double lastLoop = millis();
+double curTime(0);
 
-void setup() 
-{
+void setup() {
+  onTone();
   Serial.begin(9600);
   while (!Serial);
-  bmp.Begin(); 
-  bno.Begin();
-  lsd.Begin();
-  lora.Begin();
+
+  pinMode(7, OUTPUT);
+  digitalWrite(7, HIGH);
+  delay(10);
+
+  bmp.begin();
+  bno.begin();
+  LSD::begin();
+  LoRaTX.begin();
+  onlineTone();
+  awaitActivation();
 }
 
-int msgCount;
-Data data;
-uint8_t packet[NBR_DATA*BYTE];
+String mess = "";
+int msgCount(0);
 
-void loop()
-{
-  data.f = millis();
-  addData(0);
-  imu::Vector<3> acc = bno.GetAcceleration();
-  data.f = acc.x();
-  addData(1);
-  data.f = acc.y();
-  addData(2);
-  data.f = acc.z();
-  addData(3);
-  data.f = bmp.GetAltitude();
-  addData(4);
-  imu::Vector<3> ang = bno.GetEuler();
-  data.f = ang.x();
-  addData(5);
-  data.f = ang.y();
-  addData(6);
-  data.f = ang.z();
-  addData(7);
+void loop() {
+  float data[NBDATA];
+  data[0] = millis();
+  data[1] = msgCount;
+  data[2] = bmp.getAltitude();
+  imu::Vector<3> acc = bno.getAcc();
+  data[3] = acc.x();
+  data[4] = acc.y();
+  data[5] = acc.z();
+  imu::Vector<3> orient = bno.getOrientation();
+  data[6] = orient.x();
+  data[7] = orient.y();
+  data[8] = orient.z();
+  data[9] = sum(data);
+  printData(data);
+  LoRaTX.sendData(data);
+  LSD::logData(data);
 
-  lsd.LogData(packet);
-  lora.SendData(packet);
-  
-  delay(400);
+  msgCount++;
 }
 
-void addData(int index, int length = NBR_DATA){
-  for(int j(0); j < BYTE; j++){
-   packet[index+j] = data.i[j];
+float sum(float d[]) {
+  float s(0);
+  for (int i(0); i < NBDATA - 1; i++) {
+    s += d[i];
+  }
+  return s;
+}
+
+void printData(float d[]) {
+  for (int i(0); i < NBDATA; i++) {
+    Serial.println(d[i]);
+  }
+  Serial.println();
+}
+
+void printTimeLapse() {
+  curTime = millis();
+  //Serial.println(curTime - lastLoop);
+  lastLoop = curTime;
+}
+
+void onTone(){
+  //tone(pin, note, duration)
+  for(int i(0); i < 2000; i++){
+    tone(8,C8-i,Q+4); 
+  }
+}
+
+void onlineTone(){
+  tone(8, C4, Q*4);
+}
+
+void awaitActivation() {
+  while (!LoRaTX.awaitActivation()) {
+    if (millis() - lastLoop > WAITPERIOD) {
+      Serial.println(F("no or wrong code received in determined interval"));
+      LoRaTX.sleep();
+      delay(60000);
+    }
+    lastLoop = millis();
   }
 }

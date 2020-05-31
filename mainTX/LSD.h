@@ -3,16 +3,24 @@
 
 #include <SPI.h>
 #include <SD.h>
-#include "common.h"
 #include "Data.h"
 
-class LSD
-{
-public:
-    LSD();
-    
-    void Begin();
-    void LogData(uint8_t packet[], int length = NBR_DATA*BYTE);
+#define CS (8)
+
+//LSD     ARD
+//VCC     3.3v
+//GND     GND
+//CLK     D13(SCK)
+//D0      D12(MISO)
+//D1      D11(MOSI)
+//CS      D8
+//VERIFIEE***
+
+class LSD{
+  public:
+  LSD();
+  static void begin();
+  static void logData(float d[], int leng = NBDATA);
 };
 
 #endif // LSD_H

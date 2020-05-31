@@ -2,27 +2,45 @@
 #define LORA_TX_H
 
 #include <SPI.h>
-#include <RH_RF95.h>
-#include "common.h"
+#include <LoRa.h>
 #include "Data.h"
 
-class LoRa_TX
-{
-public:
-    LoRa_TX();
-    void Begin();
-    void SendMessage(String outgoing);
-    void SendData(uint8_t data[], int length = NBR_DATA);
-private:
+#define WAITPERIOD 120000
+#define LOCALADDRESS 0xBB    // address of this device
+#define DESTINATION 0xFF      // destination to send to
+#define INTERVAL 2000
+#define DATA 1
+#define MESSAGE 2
+
+//LORA    ARD
+
+//Vin     3.3v
+//GND     GND
+//EN      ---
+//G0      D3
+//SCK     D13
+//MISO    D12
+//MOSI    D11
+//CS      D7
+//RST     D6
+//VERIFIEE    
+
+class LoRa_TX{
+    public:
+    void begin(long freq = 433E6);
+    bool awaitActivation(int packetSize = LoRa.parsePacket());
+    void sendData(float d[], int leng = NBDATA);
+    void sendMessage(String outgoing);
+    bool sleep();
+
+    private:
     const int csPin = 7;          // LoRa radio chip select
     const int resetPin = 6;       // LoRa radio reset
-    const int irqPin = 3;         // must be a hardware interrupt pin
+    const int irqPin = 3;         // change for your board; must be a hardware interrupt pin
 
-    void writeHeader(uint8_t packet[], uint8_t data[], byte messageType);
-    RH_RF95 rf95;
-    String outgoing;
-    String activationCode;
-    byte msgCount;
+    String outgoing;              // outgoing message
+    String activationCode = "1234";
+    byte msgCount = 0;            // count of outgoing messages
 };
 
-#endif // LORA_TX_H
+#endif // LORATX_H_INCLUDED
