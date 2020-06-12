@@ -23,20 +23,19 @@ void setup() {
   pinMode(7, OUTPUT);
   digitalWrite(7, HIGH);
   delay(10);
-
   bmp.begin();
   bno.begin();
   LSD::begin();
   LoRaTX.begin();
   onlineTone();
-  awaitActivation();
+  //awaitActivation();
 }
 
 String mess = "";
 int msgCount(0);
+float data[NBDATA];
 
 void loop() {
-  float data[NBDATA];
   data[0] = millis();
   data[1] = msgCount;
   data[2] = bmp.getAltitude();
@@ -66,7 +65,7 @@ float sum(float d[]) {
 
 void printData(float d[]) {
   for (int i(0); i < NBDATA; i++) {
-    Serial.println(d[i]);
+    Serial.print((String)d[i] + F(" "));
   }
   Serial.println();
 }
@@ -88,13 +87,9 @@ void onlineTone(){
   tone(8, C4, Q*4);
 }
 
+/*
 void awaitActivation() {
-  while (!LoRaTX.awaitActivation()) {
-    if (millis() - lastLoop > WAITPERIOD) {
-      Serial.println(F("no or wrong code received in determined interval"));
-      LoRaTX.sleep();
-      delay(60000);
-    }
-    lastLoop = millis();
+  while (!LoRaTX.awaitActivation()){
+    delay(50);
   }
-}
+}*/

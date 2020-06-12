@@ -11,6 +11,14 @@ void LoRa_TX::begin(long freq = 433E6){
 
 bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
   if (packetSize == 0) return false;
+  Serial.println("Something received");
+  if(LoRa.read() != LOCALADDRESS){
+    Serial.println("Message not for me");
+  }
+  else if(LoRa.read() != DESTINATION){
+    Serial.println("Wrong sender address");
+  }
+  LoRa.read(); //incoming msgCount
   float timeStamp = 0;
   {
     char buf[BYTE];
@@ -18,11 +26,10 @@ bool LoRa_TX::awaitActivation(int packetSize = LoRa.parsePacket()){
       buf[i] = LoRa.read();
     timeStamp = atof(buf);
   }
-  
 
   String incoming = "";
 
-  while (LoRa.available()) {
+  while(LoRa.available()) {
     incoming += (char)LoRa.read();
     Serial.println(incoming);
   }

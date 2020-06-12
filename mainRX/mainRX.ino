@@ -49,30 +49,29 @@ void beginLora(){
   }
 
   Serial.println("LoRaRX online.");
+  Serial.println("Activate Avionics? Y / N");
   
-  //Serial.println("Activate Avionics? Y / N");
-  //while((Serial.readString() != "Y"));
-  
-  //Serial.println("Activating...");
+  while(!(Serial.available() && Serial.read() == 'Y'));
+  Serial.println("Activating...");
+  sendMessage("1234");
 }
 
-/*void sendMessage(String outgoing) {
+void sendMessage(String outgoing) {
   LoRa.beginPacket();                   // start packet
-  /*
+  
   LoRa.write(destination);              // add destination address
   LoRa.write(localAddress);             // add sender address
   LoRa.write(msgCount);                 // add message ID
-  LoRa.write(outgoing.length());        // add payload length
-
   char buf[BYTE];
-  float t;
-  t = millis();
-  memcpy(buf,t,sizeof(t));
-  LoRa.write(buf, sizeof(buf)); 
+  float ti;
+  ti = millis();
+  memcpy(buf,&ti,sizeof(ti));
+  LoRa.write(buf, sizeof(buf));         // add current time
+  LoRa.write(outgoing.length());        // add payload length
   LoRa.print(outgoing);                 // add payload
   LoRa.endPacket();                     // finish packet and send it
-  //msgCount++;                           // increment message ID
-}*/
+  msgCount++;                           // increment message ID
+}
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet
@@ -163,9 +162,10 @@ void stringReceive(){
 
 void printData(float d[]){
   for(int i(0); i < NBDATA; i++){
-    Serial.println(d[i]);
+    Serial.print(d[i]);
+    Serial.print(" ");
   }
-  //Serial.println();
+  Serial.println();
 }
 
 bool checkSum(float d[]){

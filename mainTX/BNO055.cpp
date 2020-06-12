@@ -10,7 +10,7 @@ void BNO055::begin(){
     Serial.println(F("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!"));
     for(;;);
   }
-  
+  bno.getTemp();
   Serial.println("BNO055 Online.");
 }
 
