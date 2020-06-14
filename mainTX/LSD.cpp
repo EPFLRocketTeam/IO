@@ -21,7 +21,7 @@ static void LSD::logData(float d[], int leng = NBDATA){
   File dataFile = SD.open("datalog.txt", FILE_WRITE);
   
   if (i == 0){
-    delay(3000);
+   // delay(3000);
     i=1;
   }
   if (dataFile) {

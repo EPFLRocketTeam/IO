@@ -29,9 +29,10 @@ class LoRa_TX{
     public:
     void begin(long freq = 433E6);
     bool awaitActivation(int packetSize = LoRa.parsePacket());
-    void sendData(float d[], int leng = NBDATA);
+    void sendData(float d[]);//, int leng = NBDATA);
     void sendMessage(String outgoing);
     bool sleep();
+    uint8_t msgCount = 0;            // count of outgoing messages
 
     private:
     const int csPin = 7;          // LoRa radio chip select
@@ -40,7 +41,7 @@ class LoRa_TX{
 
     String outgoing;              // outgoing message
     String activationCode = "1234";
-    byte msgCount = 0;            // count of outgoing messages
+
 };
 
 #endif // LORATX_H_INCLUDED

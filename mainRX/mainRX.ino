@@ -51,23 +51,21 @@ void beginLora(){
   Serial.println("LoRaRX online.");
   Serial.println("Activate Avionics? Y / N");
   
-  while(!(Serial.available() && Serial.read() == 'Y'));
-  Serial.println("Activating...");
+  //while(!(Serial.available() && Serial.read() == 'Y'));
   sendMessage("1234");
+  Serial.println("Activating...\n");
 }
 
 void sendMessage(String outgoing) {
   LoRa.beginPacket();                   // start packet
-  
   LoRa.write(destination);              // add destination address
   LoRa.write(localAddress);             // add sender address
   LoRa.write(msgCount);                 // add message ID
-  char buf[BYTE];
-  float ti;
-  ti = millis();
+  uint8_t buf[BYTE];
+  float ti = millis();
   memcpy(buf,&ti,sizeof(ti));
-  LoRa.write(buf, sizeof(buf));         // add current time
-  LoRa.write(outgoing.length());        // add payload length
+  LoRa.write(buf, sizeof(buf));         // add current time*/
+  LoRa.write((uint8_t)outgoing.length());        // add payload length
   LoRa.print(outgoing);                 // add payload
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
@@ -75,7 +73,7 @@ void sendMessage(String outgoing) {
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet
-
+                                                          Serial.println("PacketSize = " + (String)packetSize);
   switch(LoRa.read()){
    case MESSAGE  :
       stringReceive();
@@ -87,11 +85,13 @@ void onReceive(int packetSize) {
 }
 
 void dataReceive(){
-  int recipient = LoRa.read();          // recipient address
-  byte sender = LoRa.read();            // sender address
-  byte incomingMsgId = LoRa.read();     // incoming msg ID
-  float data[NBDATA]; //le temps
-  char buf[NBDATA*BYTE];
+  uint8_t recipient = LoRa.read();          // recipient address
+  uint8_t sender = LoRa.read();            // sender address
+  uint8_t incomingMsgId = LoRa.read();     // incoming msg ID
+  
+  Serial.println("incoming Msg : " + (String)incomingMsgId);
+  
+  Data data[NBDATA];                   //le temps?????????????????
   
   //Serial.println("Received from: 0x" + String(sender, HEX)); 
   //Serial.println("Sent to: 0x" + String(recipient, HEX));
@@ -101,11 +101,11 @@ void dataReceive(){
   //Serial.println(t.f/1000);
   //Serial.println("Time interval: " + String((t.f - lastTime))); //Pour tester la frequence d'echantillonage
   
-  for(int i(0); i < NBDATA*BYTE; i++){
-      buf[i] = LoRa.read();
+  for(int j(0); j < NBDATA; j++){
+      for(int k(0); k < BYTE; k++){
+        data[j].i[k] = LoRa.read();
+      }
     }
-
-  memcpy(data, buf, sizeof(buf));
   
   printData(data);
   
@@ -124,19 +124,18 @@ void stringReceive(){
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
-  byte incomingLength = LoRa.read();    // incoming msg length
-  float t;
+/*  float t;
   char buf[BYTE];
   for(int i(0); i < 4; i++)
     buf[i] = LoRa.read();
   t = atof(buf);
-  
+  */
+  byte incomingLength = LoRa.read();    // incoming msg length
   String incoming = "";
 
   while (LoRa.available()) {
     incoming += (char)LoRa.read();
   }
-
   if (incomingLength != incoming.length()) {   // check length for error
     Serial.println("error: message length does not match length");
     return;                             // skip rest of function
@@ -153,16 +152,16 @@ void stringReceive(){
   Serial.println("Sent to: 0x" + String(recipient, HEX));
   Serial.println("Message ID: " + String(incomingMsgId));
   Serial.println("Message length: " + String(incomingLength));
-  Serial.println("Time:" + String(t/1000.));
+//  Serial.println("Time:" + String(t/1000.));
   Serial.println("Message: " + incoming);
   Serial.println("RSSI: " + String(LoRa.packetRssi()));
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 }
 
-void printData(float d[]){
+void printData(Data d[]){
   for(int i(0); i < NBDATA; i++){
-    Serial.print(d[i]);
+    Serial.print(d[i].f);
     Serial.print(" ");
   }
   Serial.println();
